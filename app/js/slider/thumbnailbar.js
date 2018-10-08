@@ -1,57 +1,78 @@
 import $ from 'jquery'
 import clickHandler from './../clickHandler.js'
 
-function createThumbnail(w, h, img, rot){
-    let image = $("<div class='thumbnail' rotation="+rot+"></div>");
-    image.css({'background-image': 'url("'+img+'")',
-                'width': w,
-                'height': h});
+function createThumbnail(w, h, img, rot, pad){
+    let image = $("<div class='thumbnail' rotation="+rot+"><div class='image' ></div></div>");
+    image.find(".image").css({'background-image': 'url("'+img+'")'});
+    console.log( );
+    image.css({
+        'padding': pad + "px 0px "+ pad + "px "+ pad + "px",
+        'width': w,
+        'height': h});
     return image
 }
 export default class thumbnailBar {
 
-    constructor(thumbnailC, slider){
+    constructor(thumbnailC, slider, pad=5){
         this.thumbnailBar = thumbnailC;
         this.width = this.thumbnailBar.width();
-        this.height = this.thumbnailBar.height();
+        this.height = this.thumbnailBar.innerHeight();
+        this.padding = pad;
         this.slider = slider;
         this.offset = 0;
         this.thumbnails = [];
-        this.width = this.calculateWidth();
+        this.overflow = 0;
         this.clickHandler = new clickHandler(this.thumbnailBar,this, 5);
     }
-    addImages(images){
-        images.forEach( element => {
-            this.create(element).then(() => this.thumbnails.push(element));
+    
+    ilLoaded(images){
+        this.createThumbnails(images).then(() => {
+            this.calculateOverflow();
         });
     }
-    calculateWidth(){
-        console.log("what");
-        this.thumbnails.forEach(element => {
-            console.log(element);
-            console.log($(element.imageClass));
+    createThumbnails(images){
+        return new Promise((resolve, reject) => {
+            images.forEach( element => {
+                this.create(element).then(() => this.thumbnails.push(element));
+            });
+            resolve();
         })
     }
+    calculateOverflow(){
+
+        // FIX HARDCODING ON THIS
+        this.thumbnailBar.find(".thumbnail").each((a, b)=> {
+           this.width += $(b).outerWidth() + 5; // CHANGE 5
+        });
+        this.width -= this.thumbnailBar.width()+ 5;
+    }
     chClick(e){
-        if(e.target.className == "thumbnail"){
-            this.slider.setImage($(e.target).attr("rotation"));
+        if($(e.target).parents(".thumbnail")){
+            this.slider.setImage($(e.target).parents(".thumbnail").attr("rotation"));
         }
     }
     chDrag(e, xdiff, ydiff){
         this.thumbnailBar.find(".thumbnail").each((k, v) => {
             let num = 0;
+            if(this.offset + xdiff < 0){
+                this.offset = 0;
+                xdiff = 0;
+            } else if (this.offset + xdiff > this.width){
+                this.offset = this.width;
+                xdiff = 0;
+            }
             $(v).css({"transform": "translateX("+(-(this.offset + xdiff))+"px)"});
         });
     }
-    chDrop(e, xdiff){
-        console.log("dropped")
+    chgDrop(e, xdiff){
         this.offset = this.offset + xdiff;
     }
     create(element){
         return new Promise((resolve, reject) => {
-            let width = (element.image.naturalWidth/element.image.naturalHeight) * this.height;
-            this.thumbnailBar.append(createThumbnail(width, this.height, element.imageurl, element.rotation));
+            console.log(this.height);   
+            let width = (element.image.naturalWidth/element.image.naturalHeight) * (this.height-this.padding);
+            this.thumbnailBar.append(createThumbnail(width, (this.height), element.imageurl, element.rotation, this.padding));
             resolve();
         }) 
-    }
+    }   
 }

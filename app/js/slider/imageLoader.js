@@ -3,15 +3,14 @@ import $ from 'jquery'
 import sliderImage from './sliderImage.js'
 
 class imageLoader {
-    constructor(thumbnailBar, slider){
+    constructor(callbacks, unloaded){
         this.p = [];
+        this.unloadedImages = unloaded;
         this.images = [];
-        this.thumbnailBar = thumbnailBar;
-        this.slider = slider;
-
+        this.callbacks = callbacks;
     }
     load(){
-        this.slider.ui.find("a").each((a, b) => {
+        this.unloadedImages.each((a, b) => {
             let img = new sliderImage($(b), this.p.length);
             var promise = img.promise();
             this.p.push(promise);
@@ -19,9 +18,9 @@ class imageLoader {
         });
         this.complete().then(() => {
             this.images = this.images.sort((a, b) => {return a.getRotation() > b.getRotation()}); // sort images in array in order of rotation,incase some load faster than others
-            this.thumbnailBar.addImages(this.images);
-            this.slider.setImages(this.images);
-            this.slider.setImage(0);
+            this.callbacks.forEach( callback => {
+                callback.ilLoaded(this.images);
+            });
         });
     }
     complete(){

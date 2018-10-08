@@ -1,4 +1,7 @@
 import $ from 'jquery'
+
+// NAMING CONVENTION FOR PARENT FUNCTIONS
+// FIRST TWO CHARACTERS ARE NAME OF CLASS (CH), THEN WHETHER THE CLICK/ACTION IS ON GIVEN CLASS ( CHG FOR CLICKHANDLER GLOBAL) THEN THE ACTION, DRAG/DROP/MOUSEDOWN
 export default class clickHandler {
     constructor(ui, obj,dragThreshold = 5){
         this.ui = ui;
@@ -20,8 +23,9 @@ export default class clickHandler {
     }
     documentMouseUp(e){
         if(this.dragging){
+            this.dragging = false;  
             let xdiff = this.clickPos.x - e.clientX;
-            this.parent.chDrop(e, xdiff);
+            this.parent.chgDrop(e, xdiff);
         }
         this.clicking = false;
     }
@@ -32,15 +36,19 @@ export default class clickHandler {
         this.parent.chClick(e);
     }
     mouseMove(e){
+        this.parent.chMove(e);
         
     }
     documentMove(e){
-        if((e.target === this.ui[0]) || (e.target.offsetParent === this.ui[0])){
+        // if (
+        // if((e.target === this.ui[0]) || (e.target.offsetParent === this.ui[0])){
+        if($(e.target).parents(this.ui).length){
             if(this.clicking){
                 let xdiff = this.clickPos.x - e.clientX;
                 let ydiff = this.clickPos.y - e.clientY;
                 if(Math.abs(ydiff) > this.dragThreshold || Math.abs(xdiff) > this.dragThreshold){
                     this.dragging = true;
+                    console.log("dragging");
                     this.parent.chDrag(e, xdiff);
                 }   
             }

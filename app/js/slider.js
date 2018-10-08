@@ -40,7 +40,7 @@ class slider {
     constructor(ui){
         this.ui = ui;
         this.thumbnailBar = new thumbnailBar(this.ui.find(".thumbnails"), this);
-        this.loader = new imageLoader(this.thumbnailBar, this);
+        this.loader = new imageLoader([this.thumbnailBar, this], this.ui.find("a"));
         this.imageContainer = this.ui.find(".imageContainer");
         this.imageContainer.css({"height": this.ui.height()-this.ui.find(".thumbnails").outerHeight() + "px"})
         this.activeImage = 0;
@@ -52,6 +52,10 @@ class slider {
     }
     draw(){
         
+    }
+    ilLoaded(images){
+        this.setImages(images);
+        this.setImage(0);
     }
     setImages(images){
         this.images = images;
