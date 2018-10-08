@@ -17,12 +17,20 @@ export default class thumbnailBar {
         this.slider = slider;
         this.offset = 0;
         this.thumbnails = [];
+        this.width = this.calculateWidth();
         this.clickHandler = new clickHandler(this.thumbnailBar,this, 5);
     }
     addImages(images){
         images.forEach( element => {
             this.create(element).then(() => this.thumbnails.push(element));
         });
+    }
+    calculateWidth(){
+        console.log("what");
+        this.thumbnails.forEach(element => {
+            console.log(element);
+            console.log($(element.imageClass));
+        })
     }
     chClick(e){
         if(e.target.className == "thumbnail"){
@@ -32,19 +40,12 @@ export default class thumbnailBar {
     chDrag(e, xdiff, ydiff){
         this.thumbnailBar.find(".thumbnail").each((k, v) => {
             let num = 0;
-            if( $(v).css('transform') != "none"){
-                let currTrans = $(v).css('transform').split(/[()]/)[1];
-                let posx = parseInt(currTrans.split(',')[4]);
-                num = posx - xdiff;
-                console.log(posx);
-                console.log("--")
-                console.log(xdiff);
-            }
-            this.offset = 
-            $(v).css({"transform": "translateX("+(xdiff)+"px)"});
+            $(v).css({"transform": "translateX("+(-(this.offset + xdiff))+"px)"});
         });
-        
-        console.log("-")
+    }
+    chDrop(e, xdiff){
+        console.log("dropped")
+        this.offset = this.offset + xdiff;
     }
     create(element){
         return new Promise((resolve, reject) => {

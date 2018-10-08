@@ -32,6 +32,5 @@ class imageLoader {
     }
 }
 
-Array.prototype.sort()
 
 module.exports = imageLoader;

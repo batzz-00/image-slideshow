@@ -6,6 +6,7 @@ export default class clickHandler {
         this.clicking = false;
         this.parent = obj;
         this.dragThreshold = dragThreshold;
+        this.dragging = false;
         this.clickPos = {x:0, y:0};
         $(document).on('mousedown', this.documentClick.bind(this));
         $(document).on('mouseup',this.documentMouseUp.bind(this));
@@ -17,7 +18,11 @@ export default class clickHandler {
         this.clickPos.y = e.clientY;
         this.clickPos.x = e.clientX;
     }
-    documentMouseUp(){
+    documentMouseUp(e){
+        if(this.dragging){
+            let xdiff = this.clickPos.x - e.clientX;
+            this.parent.chDrop(e, xdiff);
+        }
         this.clicking = false;
     }
     mouseDown(e){
@@ -35,7 +40,7 @@ export default class clickHandler {
                 let xdiff = this.clickPos.x - e.clientX;
                 let ydiff = this.clickPos.y - e.clientY;
                 if(Math.abs(ydiff) > this.dragThreshold || Math.abs(xdiff) > this.dragThreshold){
-             
+                    this.dragging = true;
                     this.parent.chDrag(e, xdiff);
                 }   
             }
