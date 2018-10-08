@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import clickHandler from './../clickHandler.js'
+import clickHandler from '../event_handlers/clickHandler.js'
 
 function createThumbnail(w, h, img, rot, pad){
     let image = $("<div class='thumbnail' rotation="+rot+"><div class='image' ></div></div>");
@@ -19,7 +19,6 @@ export default class thumbnailBar {
         this.height = this.thumbnailBar.innerHeight();
         this.padding = pad;
         this.slider = slider;
-        this.offset = 0;
         this.thumbnails = [];
         this.overflow = 0;
         this.clickHandler = new clickHandler(this.thumbnailBar,this, 5);
@@ -47,22 +46,13 @@ export default class thumbnailBar {
         this.width -= this.thumbnailBar.width()+ 5;
     }
     chClick(e){
+        console.log(this);
         if($(e.target).parents(".thumbnail")){
             this.slider.setImage($(e.target).parents(".thumbnail").attr("rotation"));
         }
     }
     chDrag(e, xdiff, ydiff){
-        this.thumbnailBar.find(".thumbnail").each((k, v) => {
-            let num = 0;
-            if(this.offset + xdiff < 0){
-                this.offset = 0;
-                xdiff = 0;
-            } else if (this.offset + xdiff > this.width){
-                this.offset = this.width;
-                xdiff = 0;
-            }
-            $(v).css({"transform": "translateX("+(-(this.offset + xdiff))+"px)"});
-        });
+        this.thumbnailBar.scrollLeft(this.thumbnailBar.scrollLeft() + (xdiff/3));
     }
     chgDrop(e, xdiff){
         this.offset = this.offset + xdiff;

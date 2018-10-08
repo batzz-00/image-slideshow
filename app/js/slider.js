@@ -1,7 +1,7 @@
 import $ from 'jquery'
 
 import sliderImage from './slider/sliderImage.js'
-import thumbnailBar from './slider/thumbnailbar.js'
+import thumbnailBar from './slider/thumbnailBar.js'
 import imageLoader from './slider/imageLoader.js'
 import { resolve } from 'url';
 
